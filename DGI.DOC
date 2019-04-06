@@ -1,0 +1,196 @@
+
+   ÉÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ»
+   º                                                        ºÛ
+   º     Borland Pascal Version 7.0                         ºÛ
+   º     DGI drivers document file.                         ºÛ
+   º                                                        ºÛ
+   ÇÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¶Û
+   º                                                        ºÛ
+   º     Copyright (C) 1997 Diego Iastrubni                 ºÛ
+   º                                                        ºÛ
+   ÈÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍÍ¼Û
+    ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+
+
+  ÛÛ   Û  ÛÛ  Û Û    ÛÛ Û  ŞÛİ Û Û ÛÛ
+  Û Û ÛÜÛ ÛÜÛ ÛÛ    Û   Û  Û Û Û Û Û Û
+  ÛÛ  Û Û Û Û Û Û    ÛÛ ÛÛ ŞÛİ ÛÛÛ ÛÛ
+
+
+  ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+       DGI Graphics driver document file
+   ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+  ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+
+
+
+  God, I hate writing doc's. My english sucks and I have a lot of grammer
+errors. Well fuck you thats your problem :-(
+
+  This is the evaluation version of one of my projects called DGI. Those
+are graphic drivers (like Borland's BGI) but they work in 256-colors
+(or like the british say "colours") and much faster. Currently the drivers
+are build to work on 1 graphic mode, wich means a lot of optimization.
+
+  I got the idea and the initial format from QPEG drivers. Basicly those
+drivers were made to help the program in little things like mode setting,
+and bank switching. I expanded them to contain also graphics procedures like
+PutPixel, GetPixel, ClearScreen and PutImage. In next versions they will also
+have a Init procedure to initlize the drivers.
+
+  Current version contains these procedures :
+
+(the header is written in pascal because the code to load them is currently
+ written in pascal, maybe I will write a C version some day )
+
+     Procedure SetMode
+     Procedure PutPixel( x, y: Integer; Color: Word )
+     Function  GetPixel( x, y: Integer ): Integer
+     Procedure ClearScreen( Color: Word )
+
+   In the following procedures "x", "y" means the first point
+   on the screen and "XLen", "YLen" means the width or hiegth
+
+     Procedure Box( x, y, XLen, YLen, Color: Word )
+     Procedure PutImage( x, y, XLen, YLen: Word; Var Image )
+     Procedure GetImage( x, y, XLen, YLen: Word; Var Image )
+     Procedure PutImage2( x, y, XLen, YLen: Word; Var Image )
+     Procedure HLine( x, y, XLen, Color: Word )
+     Procedure VLine( x, y, YLen, Color: Word )
+
+
+   There are some more procedures but they are not in the driver.
+   They are written in pascal in the DGI unit
+
+     Procedure Line( x1,y1,x2,y2 : Word; Color: Word);
+     Procedure Circle(x1, y1, rad: Integer; Col: Word );
+     Procedure FillCircle(x1, y1, rad : Integer; Col: Word );
+
+
+    And also some output procedures:
+
+     Procedure WriteChar1( x, y: Word; AChar: Char );
+     Procedure WriteChar2( x, y: Word; AChar: Char );
+     Procedure WriteStr1( x, y: Word; s: String );
+     Procedure WriteStr2( x, y: Word; s: String );
+
+
+   ÜÜÜÜÜÜÜÜÜÜ
+     Notes
+   ßßßßßßßßßß
+
+  ş There are two PutImage procedures "PutImage", "PutImage2". The
+difference is that one draws the color 0 and the other uses 0 as transparent.
+I forgot wich one does wich.
+
+  ş Note that in these drivers you dont pass 2 points but, one point
+only. I did it because eventualy you will need to calculate the distance
+between those 2 points (at least inside the procedure code).
+
+  ş The colors are passed as word because they would be passed as words
+any way. The reason for this is that Turbo-Pascal (should I write TM or (c)?)
+passes the parameters using the stack (you cant push a single byte to the
+stack).
+
+  ş "Image" in PutImage and GetImage means the BitMAP variable (an array
+or a pointer). If you use a pointer dont forget the carret (^). See examples.
+
+
+
+   ÜÜÜÜÜÜÜÜÜÜÜÜÜ
+     DGI files
+   ßßßßßßßßßßßßß
+
+  I Have written some drivers, they are all included in this ZIP file,
+with the sources. Some are garantied to work in any computer (MCGA.DGI,
+XMODE.DGI) and others I am not sure why they dont work (VESALO.DGI,
+VESAHI.DGI).
+
+  The VESA drivers do not install VESA, but they use the one in your BIOS
+(yes!!! VESA in the BIOS try AH=42H, INT 10H). That is the main reason why
+not all drivers may work on youre computer. The bug is that the bank switching
+procedure reported by your bios may not be good to your video card. (talking
+about windows-95 size bugs...)
+
+  One way to defeat this is problem is indentify youre video card and use an
+internal bank switching procedure. I was thinkng of it (maybe I'll do a driver
+that works like that), but that would do a big DGI (about 10K of 100% PURE
+assembly programming wich could be very ugly).
+  The second way is to install UNIVBE.EXE (a TRS that extendes the BIOS VIDEO
+interrupt). This program will make the bios to report to a bank switching
+procedure that is garantied to be good to your video card. If you have
+problems running any of the VESA drivers, try looking on our site a link to
+where you can get a copy of UNIVBE.
+
+  There is another DGI file that works: SVGA.DGI. This is a 640x400x256
+UnChained mode (XMODE in a new resolution). It work very good unless you
+install UNIVBE.EXE.
+
+
+  ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+    Future extentions
+  ßßßßßßßßßßßßßßßßßßßßß
+
+  In the beta version and the first real version I will try to make them
+work in protected mode. They will also include a virtual screen.
+
+  Currently they are faster then the graph unit but they are not faster
+then Solar Designer drivers, PGI format (GVISION uses them). Dont worry
+I will make something faster then them.
+
+  I may add also internal procedures for characters and string output.
+The current version uses a pascal procedure that calls put-pixels. That is
+they are slow.
+
+  I'm tinking that maybe it will be better that in every driver will be
+more then one video mode, what do you think ? please E-MAIL us.
+
+
+  ÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+    Small demo
+  ßßßßßßßßßßßßßß
+
+Uses DGI;           <- You must include this unit always
+
+Const
+   DrvName =        <- Write the name of the driver you want
+
+Begin
+  If LoadDriver( DrvName )<>deNoError
+    Then Halt;                      <- Quit program in any error
+
+  SetMode;
+  Randomize;
+
+  Repeat
+    PutPixel( Random(GetMaxX), Random(GetMaxY), Random(256) );
+  Until Port[$60] = 1;             <- Press ESC to quit
+
+  UnLoadDriver;                    <- Free driver memory
+  SetVGAMode(3);                   <- Text mode color
+End.
+
+  There are more demos in files DEMO?.PAS. For DEMO3.PAS I also included
+the SVGA256.DGI. This program tests wich driver is faster (guess who?).
+
+  ÜÜÜÜÜÜÜÜÜÜÜÜÜ
+    Thanks to
+  ßßßßßßßßßßßßß
+
+  ş Ariel for reminding me that I am messing with kaka.
+  ş Iftah for helping me writting the PutImage for X-Mode.
+  ş Mark Feldman for the idea of SVGA (released on PC-Proggramers
+    Enciclopedia, Menu item Graphics\SVGA\Extended mode).
+  ş Oliver Fromme - QPEG writter for the idea of how to do the drivers.
+  ş DENTHOR of ASPHYXIA, for writting the VGA Trainers. Whitout you
+    I would use the graph unit :(
+
+
+  ÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
+    dark-cloud
+  ßßßßßßßßßßßßßß
+
+Send us E-MAIL to : dark-cloud@geociteis.com
+Visit us at       : http://www.geocities.com/SiliconValley/Vista/1595
+
